@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final WebSocketChannel _channel = WebSocketChannel.connect(
-    Uri.parse('ws://10.0.2.2:8080'),
+    Uri.parse('ws://10.0.2.2:3000'),
   );
 
   @override
