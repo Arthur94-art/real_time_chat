@@ -1,0 +1,19 @@
+# Flutter-specific
+/client/.dart_tool/
+/client/.idea/
+/client/.vscode/
+/client/build/
+/client/.packages
+/client/flutter_*.png
+*.iml
+
+# Node.js-specific
+/server/node_modules/
+/server/.env
+
+# macOS-specific
+.DS_Store
+
+# General
+*.log
+*.lock
