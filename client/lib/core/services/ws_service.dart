@@ -1,12 +1,12 @@
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class WebSocketService {
+class WSService {
   final String url;
   late WebSocketChannel _channel;
 
   bool isConnected = false;
 
-  WebSocketService(this.url) {
+  WSService(this.url) {
     try {
       _channel = WebSocketChannel.connect(Uri.parse(url));
       isConnected = true;
