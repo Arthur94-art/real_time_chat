@@ -20,6 +20,13 @@ class AuthAuthenticated extends AuthState {
   List<Object> get props => [user];
 }
 
+class AuthUnauthenticated extends AuthState {
+  const AuthUnauthenticated();
+
+  @override
+  List<Object> get props => [];
+}
+
 class AuthError extends AuthState {
   final String message;
 

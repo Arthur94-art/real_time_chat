@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/core/widgets/loader.dart';
 import 'package:real_time_chat/core/widgets/text_field.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -53,7 +54,7 @@ class _AuthPageState extends State<AuthPage> {
               },
               builder: (context, state) {
                 if (state is AuthLoading) {
-                  return const CircularProgressIndicator();
+                  return const CustomLoader();
                 }
                 return ElevatedButton(
                   onPressed: () {

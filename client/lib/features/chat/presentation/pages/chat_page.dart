@@ -1,47 +1,62 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/core/widgets/text_field.dart';
+import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: MainColors.teal.withOpacity(.1),
-        title: const Text('Test User'),
-        centerTitle: true,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.exit_to_app_sharp,
-            ),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 20,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    'Message $index',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                );
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthUnauthenticated) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/auth',
+            (route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: MainColors.teal.withOpacity(.1),
+          title: const Text('Test User'),
+          centerTitle: true,
+          foregroundColor: Colors.white,
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const LogoutEvent());
               },
+              icon: const Icon(
+                Icons.exit_to_app_sharp,
+              ),
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: 20,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      'Message $index',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          const ChatInput(),
-        ],
+            const ChatInput(),
+          ],
+        ),
       ),
     );
   }

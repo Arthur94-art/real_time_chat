@@ -24,7 +24,7 @@ void initLocator() {
     return wsService;
   });
 
-  sl.registerFactory(() => AuthBloc(sl()));
+  sl.registerFactory(() => AuthBloc(sl(), sl()));
 
   sl.registerLazySingleton(() => LoginUsecase(sl()));
 
