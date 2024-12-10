@@ -1,105 +1,101 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:real_time_chat/core/router/navigation_helper.dart';
-import 'package:real_time_chat/core/router/routes_paths.dart';
-import 'package:real_time_chat/core/styles/colors.dart';
-import 'package:real_time_chat/core/widgets/text_field.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:real_time_chat/features/chat/presentation/widgets/chat_input.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthUnauthenticated) {
-          NavigationHelper.pushAndRemoveUntil(context, RoutesPaths.auth);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: MainColors.teal.withOpacity(.1),
-          title: const Text('Test User'),
-          centerTitle: true,
-          foregroundColor: Colors.white,
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(const LogoutEvent());
-              },
-              icon: const Icon(
-                Icons.exit_to_app_sharp,
-                color: Colors.greenAccent,
-              ),
-            )
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: 20,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      'Message $index',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  );
-                },
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.teal.withOpacity(.1),
+        title: const Text('Test User'),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<AuthBloc>().add(const LogoutEvent());
+            },
+            icon: const Icon(
+              Icons.exit_to_app_sharp,
+              color: Colors.greenAccent,
             ),
-            const ChatInput(),
-          ],
-        ),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                return ChatBubble(message: message);
+              },
+            ),
+          ),
+          const ChatInput(),
+        ],
       ),
     );
   }
 }
 
-class ChatInput extends StatelessWidget {
-  const ChatInput({super.key});
+class ChatMessage {
+  final String text;
+  final bool isMe;
+
+  ChatMessage({required this.text, required this.isMe});
+}
+
+final List<ChatMessage> messages = [
+  ChatMessage(text: "Hello!", isMe: false),
+  ChatMessage(text: "Hi there!", isMe: true),
+  ChatMessage(text: "How are you?", isMe: false),
+  ChatMessage(text: "How are you?", isMe: false),
+  ChatMessage(text: "I'm good, thanks! How about you?", isMe: true),
+  ChatMessage(text: "I'm good, thanks! How about you?", isMe: true),
+  ChatMessage(text: "Doing great, thanks!", isMe: false),
+  ChatMessage(text: "That's awesome to hear!", isMe: true),
+];
+
+class ChatBubble extends StatelessWidget {
+  final ChatMessage message;
+
+  const ChatBubble({required this.message, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController messageController = TextEditingController();
+    final isMe = message.isMe;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      color: MainColors.teal.withOpacity(.1),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: CustomTextField(
-                controller: messageController,
-                hintText: 'Message...',
-                fillColor: MainColors.white70.withOpacity(.1),
-                isOutlined: false,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        decoration: BoxDecoration(
+          color: isMe
+              ? Colors.greenAccent.withOpacity(0.3)
+              : Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(isMe ? 12 : 0),
+            topRight: Radius.circular(isMe ? 0 : 12),
+            bottomLeft: const Radius.circular(12),
+            bottomRight: const Radius.circular(12),
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.greenAccent),
-            onPressed: () {
-              final message = messageController.text.trim();
-              if (message.isNotEmpty) {
-                log('Send message: $message');
-                messageController.clear();
-              }
-            },
+        ),
+        child: Text(
+          message.text,
+          style: TextStyle(
+            color: isMe ? Colors.greenAccent : Colors.white70,
+            fontSize: 16,
           ),
-        ],
+        ),
       ),
     );
   }
