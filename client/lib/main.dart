@@ -7,6 +7,7 @@ import 'package:real_time_chat/core/router/router_config.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -36,6 +37,9 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(
           create: (context) => sl<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<ChatBloc>(),
         ),
       ],
       child: MaterialApp.router(

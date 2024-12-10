@@ -6,3 +6,9 @@ abstract class ChatEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class ListenToOnlineStatus extends ChatEvent {
+  const ListenToOnlineStatus();
+  @override
+  List<Object> get props => [];
+}

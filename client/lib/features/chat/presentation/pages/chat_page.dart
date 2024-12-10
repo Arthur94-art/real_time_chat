@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:real_time_chat/core/router/navigation_helper.dart';
 import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/widgets/chat_input.dart';
 
 class ChatPage extends StatelessWidget {
@@ -22,19 +23,24 @@ class ChatPage extends StatelessWidget {
             size: 40,
             Icons.supervised_user_circle_sharp,
           ),
+          titleSpacing: 6,
           automaticallyImplyLeading: false,
           backgroundColor: Colors.teal.withOpacity(.1),
-          title: const Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'User',
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
-              Text(
-                'Last seen',
-                style: TextStyle(fontSize: 14, color: Colors.white70),
-              ),
+              StreamBuilder<bool>(
+                  stream: context.read<ChatBloc>().statusStream,
+                  builder: (context, snapshot) {
+                    return const Text(
+                      'Last seen',
+                      style: TextStyle(fontSize: 14, color: Colors.white70),
+                    );
+                  }),
             ],
           ),
           foregroundColor: Colors.white,
