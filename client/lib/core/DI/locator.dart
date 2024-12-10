@@ -37,10 +37,6 @@ void initLocator() {
   );
 
   sl.registerLazySingleton<OnlineStatusDataSource>(
-    () => OnlineStatusDataSourceImpl(sl()),
-  );
-
-  sl.registerLazySingleton<OnlineStatusDataSourceImpl>(
     () => OnlineStatusDataSourceImpl(sl<WebSocketChannel>()),
   );
 

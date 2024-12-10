@@ -2,7 +2,7 @@ import 'package:real_time_chat/features/chat/data/datasources/online_status_data
 import 'package:real_time_chat/features/chat/domain/repositories/online_status_repository.dart';
 
 class OnlineStatusRepositoryImpl implements OnlineStatusRepository {
-  final OnlineStatusDataSourceImpl remoteDataSource;
+  final OnlineStatusDataSource remoteDataSource;
 
   OnlineStatusRepositoryImpl(this.remoteDataSource);
 
