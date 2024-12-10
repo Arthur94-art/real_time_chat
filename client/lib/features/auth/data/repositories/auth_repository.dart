@@ -21,8 +21,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final user = await remoteDataSource.login(username);
       await localDataSource.saveUser(user.toEntity());
       return Right(user.toEntity());
-    } on ServerException {
-      return const Left(ServerFailure('Login failed'));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
