@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/core/router/navigation_helper.dart';
+import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/widgets/chat_input.dart';
 
@@ -8,39 +10,47 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.teal.withOpacity(.1),
-        title: const Text('Test User'),
-        centerTitle: true,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<AuthBloc>().add(const LogoutEvent());
-            },
-            icon: const Icon(
-              Icons.exit_to_app_sharp,
-              color: Colors.greenAccent,
-            ),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ChatBubble(message: message);
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthUnauthenticated) {
+          NavigationHelper.pushAndRemoveUntil(context, RoutesPaths.auth);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.teal.withOpacity(.1),
+          title: const Text('Test User'),
+          centerTitle: true,
+          foregroundColor: Colors.white,
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const LogoutEvent());
               },
+              icon: const Icon(
+                Icons.exit_to_app_sharp,
+                color: Colors.greenAccent,
+              ),
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  final message = messages[index];
+                  return ChatBubble(message: message);
+                },
+              ),
             ),
-          ),
-          const ChatInput(),
-        ],
+            const ChatInput(),
+          ],
+        ),
       ),
     );
   }

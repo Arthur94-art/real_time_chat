@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final TextStyle? hintStyle;
   final bool autoFocus;
   final int? maxLines;
+  final double borderRadius;
 
   const CustomTextField({
     super.key,
@@ -22,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.hintStyle,
     this.autoFocus = false,
     this.maxLines = 1,
+    this.borderRadius = 8.0,
   });
 
   @override
@@ -34,13 +36,20 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         labelText: labelText,
-        hintStyle: hintStyle ?? const TextStyle(color: Colors.grey),
+        hintStyle: hintStyle,
         filled: true,
         fillColor: fillColor,
         border: isOutlined
             ? OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide: const BorderSide(color: Colors.greenAccent),
+              )
+            : InputBorder.none,
+        focusedBorder: isOutlined
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+                borderSide:
+                    const BorderSide(color: Colors.greenAccent, width: 1),
               )
             : InputBorder.none,
       ),
