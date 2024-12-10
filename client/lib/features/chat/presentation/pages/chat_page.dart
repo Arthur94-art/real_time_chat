@@ -18,10 +18,25 @@ class ChatPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: const Icon(
+            size: 40,
+            Icons.supervised_user_circle_sharp,
+          ),
           automaticallyImplyLeading: false,
           backgroundColor: Colors.teal.withOpacity(.1),
-          title: const Text('Test User'),
-          centerTitle: true,
+          title: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'User',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+              Text(
+                'Last seen',
+                style: TextStyle(fontSize: 14, color: Colors.white70),
+              ),
+            ],
+          ),
           foregroundColor: Colors.white,
           actions: [
             IconButton(
