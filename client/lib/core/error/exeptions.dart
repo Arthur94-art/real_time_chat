@@ -5,17 +5,19 @@ class AppException implements Exception {
 }
 
 class ServerException extends AppException {
-  const ServerException([super.message = 'Server error occurred']);
-}
+  const ServerException(super.message);
 
-class CacheException extends AppException {
-  const CacheException([super.message = 'Cache error occurred']);
-}
-
-class AuthenticationException extends AppException {
-  const AuthenticationException([super.message = 'Authentication failed']);
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 class UnknownException extends AppException {
-  const UnknownException([super.message = 'Unknown error occurred']);
+  const UnknownException(super.message);
+
+  @override
+  String toString() {
+    return message;
+  }
 }

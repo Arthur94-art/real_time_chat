@@ -5,17 +5,19 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure([super.message = 'Server error occurred']);
-}
+  const ServerFailure(super.message);
 
-class CacheFailure extends Failure {
-  const CacheFailure([super.message = 'Cache error occurred']);
-}
-
-class AuthenticationFailure extends Failure {
-  const AuthenticationFailure([super.message = 'Authentication failed']);
+  @override
+  String toString() {
+    return message;
+  }
 }
 
 class UnknownFailure extends Failure {
-  const UnknownFailure([super.message = 'Unknown error occurred']);
+  const UnknownFailure(super.message);
+
+  @override
+  String toString() {
+    return message;
+  }
 }

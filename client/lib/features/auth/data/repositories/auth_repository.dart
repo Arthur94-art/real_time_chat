@@ -21,7 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
         ),
       );
     } catch (e) {
-      return const Left(ServerFailure('Failed to connect to server'));
+      return Left(ServerFailure(e.toString()));
     }
   }
 }
