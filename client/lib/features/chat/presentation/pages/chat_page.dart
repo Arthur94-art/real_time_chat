@@ -11,9 +11,19 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: MainColors.teal.withOpacity(.1),
-        title: const Text('Chat'),
+        title: const Text('Test User'),
+        centerTitle: true,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.exit_to_app_sharp,
+            ),
+          )
+        ],
       ),
       body: Column(
         children: [

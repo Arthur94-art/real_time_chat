@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:real_time_chat/core/DI/locator.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/core/widgets/gradient_background.dart';
+import 'package:real_time_chat/features/auth/data/models/user_model.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:real_time_chat/features/auth/presentation/pages/auth_page.dart';
 import 'package:real_time_chat/features/chat/presentation/pages/chat_page.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserModelAdapter());
+  await Hive.openBox<UserModel>('users');
   initLocator();
   runApp(const MyApp());
 }

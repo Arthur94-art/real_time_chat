@@ -6,7 +6,7 @@ import 'package:real_time_chat/core/http/http_client_impl.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<AuthModel> login(String username);
+  Future<UserModel> login(String username);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -15,7 +15,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.httpClient);
 
   @override
-  Future<AuthModel> login(String username) async {
+  Future<UserModel> login(String username) async {
     try {
       final response = await httpClient.post(
         '${ApiConfig.baseUrl}/auth/login',
@@ -23,7 +23,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         body: {'username': username},
       );
 
-      return AuthModel.fromJson(response);
+      return UserModel.fromJson(response);
     } on SocketException catch (_) {
       throw const ServerException(
           'Failed to connect to the server. Please check your network connection.');
