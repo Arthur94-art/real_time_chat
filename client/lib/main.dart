@@ -3,13 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:real_time_chat/core/DI/locator.dart';
 import 'package:real_time_chat/core/local_data/user_local_data.dart';
+import 'package:real_time_chat/core/router/router_config.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
-import 'package:real_time_chat/core/widgets/gradient_background.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:real_time_chat/features/auth/presentation/pages/auth_page.dart';
-import 'package:real_time_chat/features/auth/presentation/pages/auth_redirect.dart';
-import 'package:real_time_chat/features/chat/presentation/pages/chat_page.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -41,16 +38,12 @@ class _MyAppState extends State<MyApp> {
           create: (context) => sl<AuthBloc>(),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: MainColors.transparent,
         ),
-        home: const GradientAppWrapper(child: AuthRedirector()),
-        routes: {
-          '/auth': (context) => const GradientAppWrapper(child: AuthPage()),
-          '/chat': (context) => const GradientAppWrapper(child: ChatPage()),
-        },
+        routerConfig: NavigationConfig.router,
       ),
     );
   }

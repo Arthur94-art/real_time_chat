@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/core/router/navigation_helper.dart';
+import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/core/widgets/text_field.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
@@ -14,11 +16,7 @@ class ChatPage extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/auth',
-            (route) => false,
-          );
+          NavigationHelper.pushAndRemoveUntil(context, RoutesPaths.auth);
         }
       },
       child: Scaffold(
@@ -35,6 +33,7 @@ class ChatPage extends StatelessWidget {
               },
               icon: const Icon(
                 Icons.exit_to_app_sharp,
+                color: Colors.greenAccent,
               ),
             )
           ],
@@ -71,21 +70,27 @@ class ChatInput extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      color: Colors.grey.shade100,
+      color: MainColors.teal.withOpacity(.1),
       child: Row(
         children: [
           Expanded(
-            child: CustomTextField(
-              controller: messageController,
-              hintText: 'Message...',
-              fillColor: Colors.grey.shade200,
-              isOutlined: false,
-              textStyle: const TextStyle(fontSize: 16),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: CustomTextField(
+                controller: messageController,
+                hintText: 'Message...',
+                fillColor: MainColors.white70.withOpacity(.1),
+                isOutlined: false,
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.send, color: Colors.blue),
+            icon: const Icon(Icons.send, color: Colors.greenAccent),
             onPressed: () {
               final message = messageController.text.trim();
               if (message.isNotEmpty) {

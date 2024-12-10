@@ -15,7 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._loginUsecase, this._userLocalData) : super(AuthInitial()) {
     on<CheckAuthEvent>((event, emit) async {
       final user = _userLocalData.getCurrentUser();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(milliseconds: 500));
       if (user != null) {
         emit(AuthAuthenticated(user));
       } else {

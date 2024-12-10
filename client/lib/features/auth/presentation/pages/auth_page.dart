@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/core/router/navigation_helper.dart';
+import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/core/widgets/loader.dart';
 import 'package:real_time_chat/core/widgets/text_field.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
@@ -45,7 +47,8 @@ class _AuthPageState extends State<AuthPage> {
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthAuthenticated) {
-                  Navigator.pushNamed(context, '/chat');
+                  NavigationHelper.pushAndRemoveUntil(
+                      context, RoutesPaths.chat);
                 } else if (state is AuthError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),

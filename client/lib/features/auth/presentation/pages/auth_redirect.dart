@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/core/router/navigation_helper.dart';
+import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/core/widgets/loader.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -22,9 +24,9 @@ class _AuthRedirectorState extends State<AuthRedirector> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Navigator.pushReplacementNamed(context, '/chat');
+          NavigationHelper.pushAndRemoveUntil(context, RoutesPaths.chat);
         } else if (state is AuthUnauthenticated) {
-          Navigator.pushReplacementNamed(context, '/auth');
+          NavigationHelper.pushAndRemoveUntil(context, RoutesPaths.auth);
         }
       },
       child: const Scaffold(
