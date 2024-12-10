@@ -1,7 +1,8 @@
-import 'dart:convert';
+import 'dart:io';
 
-import 'package:http/http.dart' as http;
+import 'package:real_time_chat/core/config/api_config.dart';
 import 'package:real_time_chat/core/error/exeptions.dart';
+import 'package:real_time_chat/core/http/http_client_impl.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -9,27 +10,25 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final http.Client client;
+  final HttpClient httpClient;
 
-  AuthRemoteDataSourceImpl(this.client);
+  AuthRemoteDataSourceImpl(this.httpClient);
 
   @override
   Future<AuthModel> login(String username) async {
     try {
-      final response = await client.post(
-        Uri.parse('http://10.0.2.2:3000/auth/login'),
+      final response = await httpClient.post(
+        '${ApiConfig.baseUrl}/auth/login',
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username}),
+        body: {'username': username},
       );
 
-      if (response.statusCode == 200) {
-        return AuthModel.fromJson(jsonDecode(response.body));
-      } else {
-        final error = jsonDecode(response.body)['message'];
-        throw ServerException('Failed to login: $error');
-      }
+      return AuthModel.fromJson(response);
+    } on SocketException catch (_) {
+      throw const ServerException(
+          'Failed to connect to the server. Please check your network connection.');
     } catch (e) {
-      throw ServerException(e.toString());
+      throw ServerException('Failed to login: $e');
     }
   }
 }
