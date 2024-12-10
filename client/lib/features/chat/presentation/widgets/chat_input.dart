@@ -23,7 +23,6 @@ class ChatInput extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: CustomTextField(
-                    borderRadius: 20,
                     controller: messageController,
                     hintText: 'Message...',
                     hintStyle: const TextStyle(
