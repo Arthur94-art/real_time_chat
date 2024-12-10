@@ -9,25 +9,30 @@ router.post('/login', (req, res) => {
   try {
     const { username } = req.body;
 
-    // Перевірка: чи передано username
     if (!username || username.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        message: 'Username is required',
-      });
+     return setTimeout(() => {
+        return res.status(400).json({
+          success: false,
+          message: 'Username is required',
+        });
+      }, 500);
+     
     }
 
-    const id = userIdCounter++;
-    const token = uuidv4();
+    setTimeout(() => {
+      const id = userIdCounter++;
+      const token = uuidv4();
 
-    users.set(token, { id, username });
+      users.set(token, { id, username });
 
-    return res.status(200).json({
-      success: true,
-      id,
-      username,
-      token,
-    });
+      return res.status(200).json({
+        success: true,
+        id,
+        username,
+        token,
+      });
+    }, 500); 
+
   } catch (error) {
     console.error('Login error:', error);
 
