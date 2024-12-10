@@ -12,7 +12,6 @@ class OnlineStatusDataSourceImpl implements OnlineStatusDataSource {
   final StreamController<bool> _statusController = StreamController<bool>();
 
   OnlineStatusDataSourceImpl(this._channel) {
-    log('Initializing OnlineStatusDataSourceImpl');
     try {
       _channel.stream.listen(
         (event) {

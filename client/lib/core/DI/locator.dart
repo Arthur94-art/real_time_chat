@@ -19,14 +19,14 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 final sl = GetIt.instance;
 
 void initLocator() {
-  // Реєстрація Hive
+  //  Hive
   sl.registerLazySingleton(() => UserLocalData(Hive.box<UserModel>('users')));
 
-  // HTTP клієнт
+  // HTTP
   sl.registerLazySingleton<HttpClient>(() => HttpClientImpl(http.Client()));
   sl.registerLazySingleton(() => http.Client());
 
-  // WebSocket сервіс
+  // WebSocket
   sl.registerLazySingleton<WebSocketChannel>(
     () => WebSocketChannel.connect(Uri.parse('ws://10.0.2.2:3000')),
   );
