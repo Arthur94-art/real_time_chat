@@ -8,5 +8,6 @@ abstract class StatusRepository {
 
 abstract class MessageRepository {
   Either<Failure, Stream<String>> getMessageStream();
+  void sendMessage(String message);
   void dispose();
 }

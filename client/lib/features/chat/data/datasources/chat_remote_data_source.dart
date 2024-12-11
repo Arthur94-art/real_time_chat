@@ -6,6 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 abstract class ChatRemoteDataSource {
   Stream<dynamic> get socketStream;
+  void sendMessage(String message);
   void dispose();
 }
 
@@ -44,6 +45,16 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Stream<dynamic> get socketStream => _socketController.stream;
+
+  @override
+  void sendMessage(String message) {
+    try {
+      log('Sending message: $message');
+      _channel.sink.add(jsonEncode({'message': message}));
+    } catch (e) {
+      log('Failed to send message: $e');
+    }
+  }
 
   @override
   void dispose() {

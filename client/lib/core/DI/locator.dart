@@ -11,8 +11,10 @@ import 'package:real_time_chat/features/auth/domain/repositories/auth_repository
 import 'package:real_time_chat/features/auth/domain/usecases/login_usecase.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:real_time_chat/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:real_time_chat/features/chat/data/repositories/msg_repository.dart';
 import 'package:real_time_chat/features/chat/data/repositories/status_repository_impl.dart';
 import 'package:real_time_chat/features/chat/domain/repositories/chat_repository.dart';
+import 'package:real_time_chat/features/chat/domain/usecases/msg_use_case.dart';
 import 'package:real_time_chat/features/chat/domain/usecases/online_status_case.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 
@@ -45,12 +47,16 @@ void initLocator() {
   sl.registerFactory<StatusRepository>(
     () => StatusRepositoryImpl(sl()),
   );
+  sl.registerFactory<MessageRepository>(
+    () => MessageRepositoryImpl(sl()),
+  );
 
   // Use Cases
   sl.registerLazySingleton(() => LoginUsecase(sl()));
   sl.registerFactory(() => GetStatusUseCase(sl()));
+  sl.registerFactory(() => MessengerUseCase(sl()));
 
   // BLoC
   sl.registerFactory(() => AuthBloc(sl(), sl()));
-  sl.registerFactory(() => ChatBloc(sl()));
+  sl.registerFactory(() => ChatBloc(sl(), sl()));
 }

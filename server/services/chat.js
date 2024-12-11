@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 
-const INTERVAL_MS = 1 * 60 * 1000; 
+const INTERVAL_MS = 1 * 60 * 1000;
 const ONLINE_DELAY_MS = 2000; 
 const OFFLINE_DELAY_MS = 1000; 
 
@@ -24,7 +24,25 @@ function websocketService(server) {
       console.log(`Received from client: ${message}`);
       isTyping = true;
 
-      sendMessage(ws, `You said: ${message}`);
+      try {
+        const parsedMessage = JSON.parse(message);
+
+        if (parsedMessage.message) {
+          console.log(`User message: ${parsedMessage.message}`);
+
+          ws.send(
+            JSON.stringify({
+              type: 'ack',
+              text: `Message received: ${parsedMessage.message}`,
+              timestamp: new Date().toISOString(),
+            })
+          );
+        }
+      } catch (e) {
+        console.error('Error parsing message:', e);
+      }
+
+      sendMessage(ws, `message`);
       setOnline(ws);
 
       if (intervalId) clearInterval(intervalId);
@@ -64,23 +82,23 @@ function websocketService(server) {
 
     function setOnline(ws) {
       lastOnline = new Date().toISOString();
-      ws.send(JSON.stringify({ status: "online", lastOnline}));
+      ws.send(JSON.stringify({ status: 'online', lastOnline }));
       console.log('Server is online');
     }
 
     function setOffline(ws) {
       lastOnline = new Date().toISOString();
-      ws.send(JSON.stringify({ status: "offline", lastOnline }));
+      ws.send(JSON.stringify({ status: 'offline', lastOnline }));
       console.log(`Server is offline. Last online at: ${lastOnline}`);
     }
 
     function getRandomMessage() {
       const randomMessages = [
-        "Hello from server!",
-        "Random server message.",
-        "How are you today?",
-        "Keep up the great work!",
-        "This is another random message.",
+        'Hello from server!',
+        'Random server message.',
+        'How are you today?',
+        'Keep up the great work!',
+        'This is another random message.',
       ];
       return randomMessages[Math.floor(Math.random() * randomMessages.length)];
     }

@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/core/widgets/text_field.dart';
+import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 
 class ChatInput extends StatelessWidget {
   const ChatInput({super.key});
@@ -44,6 +46,7 @@ class ChatInput extends StatelessWidget {
                 onPressed: () {
                   final message = messageController.text.trim();
                   if (message.isNotEmpty) {
+                    context.read<ChatBloc>().add(SendMessage(message: message));
                     log('Send message: $message');
                     messageController.clear();
                   }

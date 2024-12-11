@@ -30,4 +30,9 @@ class MessageRepositoryImpl implements MessageRepository {
   void dispose() {
     _remoteDataSource.dispose();
   }
+
+  @override
+  void sendMessage(String message) {
+    _remoteDataSource.sendMessage(message);
+  }
 }
