@@ -1,13 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:real_time_chat/core/DI/locator.dart';
 import 'package:real_time_chat/core/router/navigation_helper.dart';
 import 'package:real_time_chat/core/router/routes_paths.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:real_time_chat/features/chat/domain/entities/status_entity.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/widgets/chat_input.dart';
+import 'package:real_time_chat/features/chat/presentation/widgets/chat_list.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -58,7 +58,7 @@ class ChatWidget extends StatelessWidget {
               'User',
               style: TextStyle(fontSize: 18, color: Colors.white),
             ),
-            StreamBuilder<bool>(
+            StreamBuilder<StatusEntity>(
               stream: context.read<ChatBloc>().statusStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -76,11 +76,10 @@ class ChatWidget extends StatelessWidget {
                 }
 
                 if (snapshot.hasData) {
-                  final isOnline = snapshot.data ?? false;
-
+                  final isOnline = snapshot.data?.status == 'online';
                   if (isOnline) {
                     return const Text(
-                      'Active',
+                      'Writting...',
                       style: TextStyle(fontSize: 14, color: Colors.greenAccent),
                     );
                   } else {
@@ -112,53 +111,10 @@ class ChatWidget extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
+      body: const Column(
         children: [
-          Expanded(
-            child: StreamBuilder<String>(
-              stream: context.read<ChatBloc>().msgsController,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'Error: ${snapshot.error}',
-                      style: const TextStyle(color: Colors.redAccent),
-                    ),
-                  );
-                }
-
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: Text(
-                      'No messages yet.',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  );
-                }
-
-                final newMessage = snapshot.data!;
-                log('+++${newMessage.toString()}');
-                messages.add(ChatMessage(
-                  text: newMessage,
-                  isMe: false,
-                ));
-                return ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    return ChatBubble(message: message);
-                  },
-                );
-              },
-            ),
-          ),
-          const ChatInput(),
+          ChatList(),
+          ChatInput(),
         ],
       ),
     );
@@ -173,40 +129,3 @@ class ChatMessage {
 }
 
 final List<ChatMessage> messages = [];
-
-class ChatBubble extends StatelessWidget {
-  final ChatMessage message;
-
-  const ChatBubble({required this.message, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isMe = message.isMe;
-
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: isMe
-              ? Colors.greenAccent.withOpacity(0.3)
-              : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(isMe ? 12 : 0),
-            topRight: Radius.circular(isMe ? 0 : 12),
-            bottomLeft: const Radius.circular(12),
-            bottomRight: const Radius.circular(12),
-          ),
-        ),
-        child: Text(
-          message.text,
-          style: TextStyle(
-            color: isMe ? Colors.greenAccent : Colors.white70,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    );
-  }
-}

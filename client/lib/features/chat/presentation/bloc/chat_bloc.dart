@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:real_time_chat/core/error/error_mapper.dart';
+import 'package:real_time_chat/features/chat/domain/entities/status_entity.dart';
 import 'package:real_time_chat/features/chat/domain/usecases/msg_use_case.dart';
 import 'package:real_time_chat/features/chat/domain/usecases/online_status_case.dart';
 
@@ -12,12 +13,12 @@ part 'chat_state.dart';
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetStatusUseCase _getStatusUseCase;
   final MessengerUseCase _msgUseCase;
-  final StreamController<bool> _statusController =
-      StreamController<bool>.broadcast();
+  final StreamController<StatusEntity> _statusController =
+      StreamController<StatusEntity>.broadcast();
   final StreamController<String> _msgsController =
       StreamController<String>.broadcast();
 
-  Stream<bool> get statusStream => _statusController.stream;
+  Stream<StatusEntity> get statusStream => _statusController.stream;
   Stream<String> get msgsController => _msgsController.stream;
 
   ChatBloc(this._getStatusUseCase, this._msgUseCase)
@@ -55,7 +56,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (stream) async {
           await for (final status in stream) {
             _statusController.add(status);
-            emit(status ? const UserOnline() : const UserOffline());
+            emit(
+              status.status == 'online'
+                  ? const UserOnline()
+                  : const UserOffline(),
+            );
           }
         },
       );
