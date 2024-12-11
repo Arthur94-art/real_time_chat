@@ -9,8 +9,8 @@ import 'package:real_time_chat/features/auth/data/repositories/auth_repository_i
 import 'package:real_time_chat/features/auth/domain/repositories/auth_repository.dart';
 import 'package:real_time_chat/features/auth/domain/usecases/login_usecase.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:real_time_chat/features/chat/data/datasources/online_status_data_source.dart';
-import 'package:real_time_chat/features/chat/data/repositories/online_status_repository_impl.dart';
+import 'package:real_time_chat/features/chat/data/datasources/status_data_source.dart';
+import 'package:real_time_chat/features/chat/data/repositories/status_repository_impl.dart';
 import 'package:real_time_chat/features/chat/domain/repositories/online_status_repository.dart';
 import 'package:real_time_chat/features/chat/domain/usecases/online_status_case.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
@@ -36,8 +36,8 @@ void initLocator() {
     () => AuthRemoteDataSourceImpl(sl()),
   );
 
-  sl.registerLazySingleton<OnlineStatusDataSource>(
-    () => OnlineStatusDataSourceImpl(sl()),
+  sl.registerLazySingleton<StatusDataSource>(
+    () => StatusDataSourceImpl(sl()),
   );
 
   // Repositories
@@ -45,13 +45,13 @@ void initLocator() {
     () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
 
-  sl.registerLazySingleton<OnlineStatusRepository>(
-    () => OnlineStatusRepositoryImpl(sl()),
+  sl.registerLazySingleton<StatusRepository>(
+    () => StatusRepositoryImpl(sl()),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => LoginUsecase(sl()));
-  sl.registerLazySingleton(() => GetOnlineStatusUseCase(sl()));
+  sl.registerLazySingleton(() => GetStatusUseCase(sl()));
 
   // BLoC
   sl.registerFactory(() => AuthBloc(sl(), sl()));

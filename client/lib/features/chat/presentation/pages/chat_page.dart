@@ -6,8 +6,19 @@ import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/widgets/chat_input.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  @override
+  void initState() {
+    context.read<ChatBloc>().add(const ListenToOnlineStatus());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +45,45 @@ class ChatPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18, color: Colors.white),
               ),
               StreamBuilder<bool>(
-                  stream: context.read<ChatBloc>().statusStream,
-                  builder: (context, snapshot) {
+                stream: context.read<ChatBloc>().statusStream,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Text(
-                      'Last seen',
+                      'Loading...',
                       style: TextStyle(fontSize: 14, color: Colors.white70),
                     );
-                  }),
+                  }
+
+                  if (snapshot.hasError) {
+                    return const Text(
+                      'Error fetching status',
+                      style: TextStyle(fontSize: 14, color: Colors.redAccent),
+                    );
+                  }
+
+                  if (snapshot.hasData) {
+                    final isOnline = snapshot.data ?? false;
+
+                    if (isOnline) {
+                      return const Text(
+                        'Active',
+                        style:
+                            TextStyle(fontSize: 14, color: Colors.greenAccent),
+                      );
+                    } else {
+                      return const Text(
+                        'Last seen just now',
+                        style: TextStyle(fontSize: 14, color: Colors.white70),
+                      );
+                    }
+                  }
+
+                  return const Text(
+                    'Unknown status',
+                    style: TextStyle(fontSize: 14, color: Colors.white70),
+                  );
+                },
+              ),
             ],
           ),
           foregroundColor: Colors.white,
@@ -53,7 +96,7 @@ class ChatPage extends StatelessWidget {
                 Icons.exit_to_app_sharp,
                 color: Colors.greenAccent,
               ),
-            )
+            ),
           ],
         ),
         body: Column(

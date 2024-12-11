@@ -1,3 +1,6 @@
-abstract class OnlineStatusRepository {
-  Stream<bool> getUserStatusStream();
+import 'package:dartz/dartz.dart';
+import 'package:real_time_chat/core/error/failures.dart';
+
+abstract class StatusRepository {
+  Either<Failure, Stream<bool>> getLastSeenStatusStream();
 }

@@ -2,19 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:real_time_chat/core/error/exeptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-abstract class OnlineStatusDataSource {
+abstract class StatusDataSource {
   Stream<bool> get userStatusStream;
   void dispose();
 }
 
-class OnlineStatusDataSourceImpl implements OnlineStatusDataSource {
+class StatusDataSourceImpl implements StatusDataSource {
   final WebSocketChannel _channel;
   final StreamController<bool> _statusController =
       StreamController<bool>.broadcast();
 
-  OnlineStatusDataSourceImpl(this._channel) {
+  StatusDataSourceImpl(this._channel) {
     _channel.stream.listen(
       _handleMessage,
       onError: _handleError,
@@ -29,18 +30,16 @@ class OnlineStatusDataSourceImpl implements OnlineStatusDataSource {
       if (decodedMessage is Map && decodedMessage.containsKey('status')) {
         final status = decodedMessage['status'];
         if (status is String) {
-          log('Raw message: $message');
           _statusController.add(status.toLowerCase() == 'online');
         }
       }
     } catch (e) {
-      log('Failed to decode message: $e');
+      _handleError(e);
     }
   }
 
-  void _handleError(Object error) {
-    log('Error in WebSocket: $error');
-    _statusController.addError('Failed to fetch status: $error');
+  Never _handleError(Object error) {
+    throw ChatException(error.toString());
   }
 
   void _handleDone() {

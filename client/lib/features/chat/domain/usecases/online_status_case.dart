@@ -1,10 +1,12 @@
+import 'package:dartz/dartz.dart';
+import 'package:real_time_chat/core/error/failures.dart';
 import 'package:real_time_chat/features/chat/domain/repositories/online_status_repository.dart';
 
-class GetOnlineStatusUseCase {
-  final OnlineStatusRepository repository;
+class GetStatusUseCase {
+  final StatusRepository repository;
 
-  GetOnlineStatusUseCase(this.repository);
-  Stream<bool> call() {
-    return repository.getUserStatusStream();
+  GetStatusUseCase(this.repository);
+  Either<Failure, Stream<bool>> call() {
+    return repository.getLastSeenStatusStream();
   }
 }
