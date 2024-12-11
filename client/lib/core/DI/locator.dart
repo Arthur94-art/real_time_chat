@@ -5,7 +5,7 @@ import 'package:real_time_chat/core/http/http_client_impl.dart';
 import 'package:real_time_chat/core/local_data/user_local_data.dart';
 import 'package:real_time_chat/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
-import 'package:real_time_chat/features/auth/data/repositories/auth_repository.dart';
+import 'package:real_time_chat/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:real_time_chat/features/auth/domain/repositories/auth_repository.dart';
 import 'package:real_time_chat/features/auth/domain/usecases/login_usecase.dart';
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
@@ -37,7 +37,7 @@ void initLocator() {
   );
 
   sl.registerLazySingleton<OnlineStatusDataSource>(
-    () => OnlineStatusDataSourceImpl(sl<WebSocketChannel>()),
+    () => OnlineStatusDataSourceImpl(sl()),
   );
 
   // Repositories

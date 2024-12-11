@@ -6,6 +6,7 @@
 /client/.packages
 /client/flutter_*.png
 *.iml
+/client/.flutter-plugins-dependencies
 
 # Node.js-specific
 /server/node_modules/
