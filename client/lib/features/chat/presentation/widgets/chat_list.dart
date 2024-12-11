@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:real_time_chat/features/chat/domain/entities/message_entity.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:real_time_chat/features/chat/presentation/pages/chat_page.dart';
 import 'package:real_time_chat/features/chat/presentation/widgets/chat_bubble.dart';
@@ -10,7 +11,7 @@ class ChatList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: StreamBuilder<String>(
+      child: StreamBuilder<MessageEntity>(
         stream: context.read<ChatBloc>().msgsController,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -31,12 +32,17 @@ class ChatList extends StatelessWidget {
             );
           }
 
-          final newMessage = snapshot.data!;
-          messages.add(ChatMessage(
-            text: newMessage,
-            isMe: false,
-          ));
+          final newMessage = snapshot.data?.text ?? '';
+          final isMe = snapshot.data?.type == 'client';
+          messages.insert(
+            0,
+            ChatMessage(
+              text: newMessage,
+              isMe: isMe,
+            ),
+          );
           return ListView.builder(
+            reverse: true,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             itemCount: messages.length,
             itemBuilder: (context, index) {

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:real_time_chat/core/error/failures.dart';
+import 'package:real_time_chat/features/chat/domain/entities/message_entity.dart';
 import 'package:real_time_chat/features/chat/domain/repositories/chat_repository.dart';
 
 class MessengerUseCase {
@@ -11,7 +12,7 @@ class MessengerUseCase {
     _repository.sendMessage(message);
   }
 
-  Either<Failure, Stream<String>> getMessageStream() {
+  Either<Failure, Stream<MessageEntity>> getMessageStream() {
     return _repository.getMessageStream();
   }
 
