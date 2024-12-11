@@ -7,6 +7,6 @@ class GetStatusUseCase {
 
   GetStatusUseCase(this.repository);
   Either<Failure, Stream<bool>> call() {
-    return repository.getLastSeenStatusStream();
+    return repository.getStatusStream();
   }
 }

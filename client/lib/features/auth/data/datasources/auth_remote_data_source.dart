@@ -18,7 +18,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel> login(String username) async {
     try {
       final response = await httpClient.post(
-        '${ApiConfig.baseUrl}/auth/login',
+        '${ApiConfig.http}/auth/login',
         headers: {'Content-Type': 'application/json'},
         body: {'username': username},
       );
