@@ -14,14 +14,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final MessengerUseCase _msgUseCase;
   final StreamController<bool> _statusController =
       StreamController<bool>.broadcast();
+  final StreamController<String> _msgsController =
+      StreamController<String>.broadcast();
 
   Stream<bool> get statusStream => _statusController.stream;
+  Stream<String> get msgsController => _msgsController.stream;
 
   ChatBloc(this._getStatusUseCase, this._msgUseCase)
       : super(const ChatInitial()) {
     on<ListenToOnlineStatus>(_onListenToOnlineStatus);
     on<SendMessage>((event, emit) async {
-      _msgUseCase.call(event.message);
+      _msgUseCase.sendMessage(event.message);
+    });
+    on<ListenMessages>((event, emit) async {
+      final result = _msgUseCase.getMessageStream();
+      await result.fold(
+        (failure) {
+          final errorMessage = ErrorMapper.mapFailureToMessage(failure);
+          _msgsController.addError(errorMessage);
+        },
+        (stream) async {
+          await for (final message in stream) {
+            _msgsController.add(message);
+          }
+        },
+      );
     });
   }
 

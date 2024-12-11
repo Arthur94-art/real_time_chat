@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:real_time_chat/core/DI/locator.dart';
@@ -18,7 +20,9 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<ChatBloc>()..add(const ListenToOnlineStatus()),
+      create: (context) => sl<ChatBloc>()
+        ..add(const ListenToOnlineStatus())
+        ..add(const ListenMessages()),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
@@ -111,12 +115,46 @@ class ChatWidget extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ChatBubble(message: message);
+            child: StreamBuilder<String>(
+              stream: context.read<ChatBloc>().msgsController,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error}',
+                      style: const TextStyle(color: Colors.redAccent),
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: Text(
+                      'No messages yet.',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  );
+                }
+
+                final newMessage = snapshot.data!;
+                log('+++${newMessage.toString()}');
+                messages.add(ChatMessage(
+                  text: newMessage,
+                  isMe: false,
+                ));
+                return ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return ChatBubble(message: message);
+                  },
+                );
               },
             ),
           ),
@@ -134,16 +172,7 @@ class ChatMessage {
   ChatMessage({required this.text, required this.isMe});
 }
 
-final List<ChatMessage> messages = [
-  ChatMessage(text: "Hello!", isMe: false),
-  ChatMessage(text: "Hi there!", isMe: true),
-  ChatMessage(text: "How are you?", isMe: false),
-  ChatMessage(text: "How are you?", isMe: false),
-  ChatMessage(text: "I'm good, thanks! How about you?", isMe: true),
-  ChatMessage(text: "I'm good, thanks! How about you?", isMe: true),
-  ChatMessage(text: "Doing great, thanks!", isMe: false),
-  ChatMessage(text: "That's awesome to hear!", isMe: true),
-];
+final List<ChatMessage> messages = [];
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;

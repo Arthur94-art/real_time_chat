@@ -13,6 +13,12 @@ class ListenToOnlineStatus extends ChatEvent {
   List<Object> get props => [];
 }
 
+class ListenMessages extends ChatEvent {
+  const ListenMessages();
+  @override
+  List<Object> get props => [];
+}
+
 class SendMessage extends ChatEvent {
   final String message;
   const SendMessage({required this.message});
