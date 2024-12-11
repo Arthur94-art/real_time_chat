@@ -1,8 +1,8 @@
 const WebSocket = require('ws');
 
-const INTERVAL_MS = 1 * 60 * 1000;
 const ONLINE_DELAY_MS = 2000; 
-const OFFLINE_DELAY_MS = 1000; 
+const OFFLINE_DELAY_MS = 2000; 
+const RANDOM_MESSAGE_INTERVAL_MS = 20000; 
 
 function websocketService(server) {
   const wss = new WebSocket.Server({ server });
@@ -12,87 +12,105 @@ function websocketService(server) {
   wss.on('connection', (ws) => {
     console.log('New client connected');
     let intervalId;
-    let isTyping = false;
-    let lastOnline = null;
+    let isProcessing = false; 
 
     setTimeout(() => {
-      sendMessage(ws, "Hello! Welcome to the server!");
-      setOnline(ws);
-    }, 1000);
+      sendOnlineStatus(ws);
+      setTimeout(() => {
+        sendRandomMessage(ws);
+        setTimeout(() => {
+          sendOfflineStatus(ws);
+          startRandomMessageCycle(ws);
+        }, OFFLINE_DELAY_MS);
+      }, ONLINE_DELAY_MS);
+    }, ONLINE_DELAY_MS);
 
     ws.on('message', (message) => {
       console.log(`Received from client: ${message}`);
-      isTyping = true;
 
       try {
         const parsedMessage = JSON.parse(message);
-
         if (parsedMessage.message) {
           console.log(`User message: ${parsedMessage.message}`);
 
           ws.send(
             JSON.stringify({
-              type: 'ack',
-              text: `Message received: ${parsedMessage.message}`,
+              type: 'client',
+              text: parsedMessage.message,
               timestamp: new Date().toISOString(),
             })
           );
+
+          sendOnlineStatus(ws);
+          setTimeout(() => {
+            ws.send(
+              JSON.stringify({
+                type: 'server',
+                text: `This is answer on your sms: ${parsedMessage.message}`,
+                timestamp: new Date().toISOString(),
+              })
+            );
+            setTimeout(() => {
+              sendOfflineStatus(ws);
+              resetRandomMessageCycle(ws);
+            }, OFFLINE_DELAY_MS);
+          }, ONLINE_DELAY_MS);
         }
       } catch (e) {
         console.error('Error parsing message:', e);
       }
-
-      sendMessage(ws, `message`);
-      setOnline(ws);
-
-      if (intervalId) clearInterval(intervalId);
-      startInterval();
     });
-
-    function startInterval() {
-      intervalId = setInterval(() => {
-        if (!isTyping) {
-          sendMessage(ws, getRandomMessage());
-          setOnline(ws);
-        }
-      }, INTERVAL_MS);
-    }
-
-    startInterval();
 
     ws.on('close', () => {
       console.log('Client disconnected');
       clearInterval(intervalId);
     });
 
-    function sendMessage(ws, text) {
-      setTimeout(() => {
-        const message = {
-          text,
-          timestamp: new Date().toISOString(),
-        };
-        ws.send(JSON.stringify(message));
-        console.log(`Sent message: ${JSON.stringify(message)}`);
-
-        setTimeout(() => {
-          setOffline(ws);
-        }, OFFLINE_DELAY_MS);
-      }, ONLINE_DELAY_MS);
+    function resetRandomMessageCycle(ws) {
+      clearInterval(intervalId); 
+      startRandomMessageCycle(ws); 
     }
 
-    function setOnline(ws) {
-      lastOnline = new Date().toISOString();
-      ws.send(JSON.stringify({ status: 'online', lastOnline }));
-      console.log('Server is online');
+    function startRandomMessageCycle(ws) {
+      intervalId = setInterval(() => {
+        if (!isProcessing) {
+          isProcessing = true;
+
+          sendOnlineStatus(ws);
+
+          setTimeout(() => {
+            sendRandomMessage(ws);
+
+            setTimeout(() => {
+              sendOfflineStatus(ws);
+              isProcessing = false;
+            }, OFFLINE_DELAY_MS);
+          }, ONLINE_DELAY_MS);
+        }
+      }, RANDOM_MESSAGE_INTERVAL_MS);
     }
 
-    function setOffline(ws) {
-      lastOnline = new Date().toISOString();
-      ws.send(JSON.stringify({ status: 'offline', lastOnline }));
-      console.log(`Server is offline. Last online at: ${lastOnline}`);
+    function sendOnlineStatus(ws) {
+      const lastOnline = new Date().toISOString();
+      const statusMessage = {
+        status: 'online',
+        lastOnline,
+      };
+      ws.send(JSON.stringify(statusMessage));
+      console.log(`Sent online status: ${JSON.stringify(statusMessage)}`);
     }
 
-    function getRandomMessage() {
+    function sendOfflineStatus(ws) {
+      const lastOnline = new Date().toISOString();
+      const statusMessage = {
+        status: 'offline',
+        lastOnline,
+      };
+      ws.send(JSON.stringify(statusMessage));
+      console.log(`Sent offline status: ${JSON.stringify(statusMessage)}`);
+    }
+
+    function sendRandomMessage(ws) {
       const randomMessages = [
         'Hello from server!',
         'Random server message.',
@@ -100,7 +118,15 @@ function websocketService(server) {
         'Keep up the great work!',
         'This is another random message.',
       ];
-      return randomMessages[Math.floor(Math.random() * randomMessages.length)];
+      const randomText =
+        randomMessages[Math.floor(Math.random() * randomMessages.length)];
+      const randomMessage = {
+        type: 'server',
+        text: randomText,
+        timestamp: new Date().toISOString(),
+      };
+      ws.send(JSON.stringify(randomMessage));
+      console.log(`Sent random message: ${JSON.stringify(randomMessage)}`);
     }
   });
 }

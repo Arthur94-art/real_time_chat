@@ -11,17 +11,27 @@ abstract class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
+  static ChatRemoteDataSourceImpl? _instance;
   final WebSocketChannel _channel;
   final StreamController<dynamic> _socketController =
       StreamController<dynamic>.broadcast();
 
-  ChatRemoteDataSourceImpl(String url)
+  ChatRemoteDataSourceImpl._internal(String url)
       : _channel = WebSocketChannel.connect(Uri.parse(url)) {
     _channel.stream.listen(
       _handleMessage,
       onError: _handleError,
       onDone: _handleDone,
     );
+  }
+
+  factory ChatRemoteDataSourceImpl(String url) {
+    if (_instance == null) {
+      _instance = ChatRemoteDataSourceImpl._internal(url);
+    } else {
+      log('Reusing existing ChatRemoteDataSourceImpl instance');
+    }
+    return _instance!;
   }
 
   void _handleMessage(dynamic message) {
@@ -61,5 +71,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     log('Disposing WebSocket');
     _socketController.close();
     _channel.sink.close();
+    _instance = null;
   }
 }
