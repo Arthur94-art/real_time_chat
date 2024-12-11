@@ -47,6 +47,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   @override
   Future<void> close() {
     _statusController.close();
+    _getStatusUseCase.dispose();
+
     return super.close();
   }
 }

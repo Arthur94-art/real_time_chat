@@ -12,7 +12,7 @@ import 'package:real_time_chat/features/auth/domain/usecases/login_usecase.dart'
 import 'package:real_time_chat/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:real_time_chat/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:real_time_chat/features/chat/data/repositories/status_repository_impl.dart';
-import 'package:real_time_chat/features/chat/domain/repositories/online_status_repository.dart';
+import 'package:real_time_chat/features/chat/domain/repositories/chat_repository.dart';
 import 'package:real_time_chat/features/chat/domain/usecases/online_status_case.dart';
 import 'package:real_time_chat/features/chat/presentation/bloc/chat_bloc.dart';
 
@@ -29,13 +29,11 @@ void initLocator() {
   sl.registerLazySingleton<HttpClient>(() => HttpClientImpl(http.Client()));
   sl.registerLazySingleton(() => http.Client());
 
-  // WebSocket
-
   // Remote Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<ChatRemoteDataSource>(
+  sl.registerFactory<ChatRemoteDataSource>(
     () => ChatRemoteDataSourceImpl(ApiConfig.ws),
   );
 
@@ -44,13 +42,13 @@ void initLocator() {
     () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
 
-  sl.registerLazySingleton<StatusRepository>(
+  sl.registerFactory<StatusRepository>(
     () => StatusRepositoryImpl(sl()),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => LoginUsecase(sl()));
-  sl.registerLazySingleton(() => GetStatusUseCase(sl()));
+  sl.registerFactory(() => GetStatusUseCase(sl()));
 
   // BLoC
   sl.registerFactory(() => AuthBloc(sl(), sl()));
