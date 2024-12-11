@@ -3,6 +3,7 @@ const WebSocket = require('ws');
 const ONLINE_DELAY_MS = 2000; 
 const OFFLINE_DELAY_MS = 2000; 
 const RANDOM_MESSAGE_INTERVAL_MS = 20000; 
+const USER_ONLINE_DELAY_MS = 1000; 
 
 function websocketService(server) {
   const wss = new WebSocket.Server({ server });
@@ -41,20 +42,22 @@ function websocketService(server) {
             })
           );
 
-          sendOnlineStatus(ws);
           setTimeout(() => {
-            ws.send(
-              JSON.stringify({
-                type: 'server',
-                text: `This is answer on your sms: ${parsedMessage.message}`,
-                timestamp: new Date().toISOString(),
-              })
-            );
+            sendOnlineStatus(ws);
             setTimeout(() => {
-              sendOfflineStatus(ws);
-              resetRandomMessageCycle(ws);
-            }, OFFLINE_DELAY_MS);
-          }, ONLINE_DELAY_MS);
+              ws.send(
+                JSON.stringify({
+                  type: 'server',
+                  text: `This is answer on your sms: ${parsedMessage.message}`,
+                  timestamp: new Date().toISOString(),
+                })
+              );
+              setTimeout(() => {
+                sendOfflineStatus(ws);
+                resetRandomMessageCycle(ws);
+              }, OFFLINE_DELAY_MS);
+            }, ONLINE_DELAY_MS);
+          }, USER_ONLINE_DELAY_MS);
         }
       } catch (e) {
         console.error('Error parsing message:', e);
