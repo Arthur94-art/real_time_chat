@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:real_time_chat/core/DI/locator.dart';
-import 'package:real_time_chat/core/local_data/user_local_data.dart';
 import 'package:real_time_chat/core/router/router_config.dart';
 import 'package:real_time_chat/core/styles/colors.dart';
 import 'package:real_time_chat/features/auth/data/models/user_model.dart';
@@ -24,12 +23,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void reassemble() {
-    logHiveData<UserModel>('users');
-    super.reassemble();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

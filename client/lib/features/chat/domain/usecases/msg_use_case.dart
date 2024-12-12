@@ -8,8 +8,8 @@ class MessengerUseCase {
 
   MessengerUseCase(this._repository);
 
-  void sendMessage(String message) {
-    _repository.sendMessage(message);
+  Either<Failure, void> sendMessage(String message) {
+    return _repository.sendMessage(message);
   }
 
   Either<Failure, Stream<MessageEntity>> getMessageStream() {

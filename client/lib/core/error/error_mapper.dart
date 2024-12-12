@@ -1,11 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:real_time_chat/core/error/exeptions.dart';
-
-import 'failures.dart';
+import 'package:real_time_chat/core/error/failures.dart';
 
 class ErrorMapper {
-  static Failure mapExceptionToFailure(Exception exception) {
+  static Failure mapExceptionToFailure(Object exception) {
     if (exception is ServerException) {
       return ServerFailure(exception.message);
     } else if (exception is ChatException) {
@@ -17,7 +17,9 @@ class ErrorMapper {
     } else if (exception is TimeoutException) {
       return const TimeoutFailure("Request timed out");
     } else {
-      return const UnknownFailure("An unknown error occurred");
+      log('Unhandled exception: $exception');
+      return UnknownFailure(
+          "An unknown error occurred: ${exception.toString()}");
     }
   }
 

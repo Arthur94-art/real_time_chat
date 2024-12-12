@@ -10,6 +10,6 @@ abstract class StatusRepository {
 
 abstract class MessageRepository {
   Either<Failure, Stream<MessageEntity>> getMessageStream();
-  void sendMessage(String message);
+  Either<Failure, void> sendMessage(String message);
   void dispose();
 }

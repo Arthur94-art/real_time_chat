@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:real_time_chat/core/error/exeptions.dart';
 import 'package:real_time_chat/core/error/failures.dart';
 import 'package:real_time_chat/features/chat/data/datasources/chat_remote_data_source.dart';
 import 'package:real_time_chat/features/chat/domain/entities/message_entity.dart';
@@ -36,7 +37,13 @@ class MessageRepositoryImpl implements MessageRepository {
   }
 
   @override
-  void sendMessage(String message) {
-    _remoteDataSource.sendMessage(message);
+  Either<Failure, void> sendMessage(String message) {
+    try {
+      return Right(_remoteDataSource.sendMessage(message));
+    } on ChatException catch (e) {
+      return Left(ChatFailure(e.message));
+    } catch (e) {
+      return Left(ChatFailure(e.toString()));
+    }
   }
 }

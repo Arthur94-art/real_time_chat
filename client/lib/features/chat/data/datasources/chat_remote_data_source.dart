@@ -33,23 +33,28 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   void _handleMessage(dynamic message) {
-    log('Received WebSocket message: $message');
     try {
       _socketController.add(jsonDecode(message));
-    } catch (e) {
-      _socketController.addError(const ChatException("Invalid message format"));
+    } catch (e, stackTrace) {
+      final exception = ChatException("Invalid message format: $message");
+      log(exception.toString(), stackTrace: stackTrace);
+      _socketController.addError(exception);
     }
   }
 
-  void _handleError(dynamic error) {
-    log('WebSocket error: $error');
+  void _handleError(dynamic error, [StackTrace? stackTrace]) {
+    log('WebSocket error: $error', stackTrace: stackTrace);
     _isConnected = false;
-    _socketController.addError(const ChatException("Connection error"));
+    final exception = ChatException("Connection error: ${error.toString()}");
+    _socketController.addError(exception);
   }
 
   void _handleDone() {
-    log('WebSocket closed');
+    log('WebSocket connection closed.');
     _isConnected = false;
+    const exception =
+        ChatException("WebSocket connection closed unexpectedly.");
+    _socketController.addError(exception);
     _socketController.close();
   }
 
