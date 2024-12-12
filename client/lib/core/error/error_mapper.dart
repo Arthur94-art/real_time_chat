@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:real_time_chat/core/error/exeptions.dart';
 
 import 'failures.dart';
@@ -10,8 +12,12 @@ class ErrorMapper {
       return ChatFailure(exception.message);
     } else if (exception is UnknownException) {
       return UnknownFailure(exception.message);
+    } else if (exception is SocketException) {
+      return const NetworkFailure("No Internet connection");
+    } else if (exception is TimeoutException) {
+      return const TimeoutFailure("Request timed out");
     } else {
-      return const UnknownFailure('Unknown error...');
+      return const UnknownFailure("An unknown error occurred");
     }
   }
 

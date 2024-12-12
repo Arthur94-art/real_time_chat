@@ -69,9 +69,10 @@ class ChatWidget extends StatelessWidget {
                 }
 
                 if (snapshot.hasError) {
-                  return const Text(
-                    'Error fetching status',
-                    style: TextStyle(fontSize: 14, color: Colors.redAccent),
+                  return Text(
+                    '${snapshot.error ?? 'Unknown error'}',
+                    style:
+                        const TextStyle(fontSize: 14, color: Colors.redAccent),
                   );
                 }
 

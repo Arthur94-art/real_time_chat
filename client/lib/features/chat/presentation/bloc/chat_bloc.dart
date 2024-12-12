@@ -26,7 +26,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       : super(const ChatInitial()) {
     on<ListenToOnlineStatus>(_onListenToOnlineStatus);
     on<SendMessage>((event, emit) async {
-      _msgUseCase.sendMessage(event.message);
+      try {
+        _msgUseCase.sendMessage(event.message);
+      } catch (e) {
+        final failure = ErrorMapper.mapExceptionToFailure(e as Exception);
+        final errorMessage = ErrorMapper.mapFailureToMessage(failure);
+        emit(ChatError(errorMessage));
+      }
     });
     on<ListenMessages>((event, emit) async {
       final result = _msgUseCase.getMessageStream();
@@ -52,7 +58,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         (failure) {
           final errorMessage = ErrorMapper.mapFailureToMessage(failure);
           _statusController.addError(errorMessage);
-          emit(UserStatusError(errorMessage));
+          emit(ChatError(errorMessage));
         },
         (stream) async {
           await for (final status in stream) {
@@ -69,7 +75,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       final failure = ErrorMapper.mapExceptionToFailure(exception as Exception);
       final errorMessage = ErrorMapper.mapFailureToMessage(failure);
       _statusController.addError(errorMessage);
-      emit(UserStatusError(errorMessage));
+      emit(ChatError(errorMessage));
     }
   }
 

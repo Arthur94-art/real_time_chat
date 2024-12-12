@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:real_time_chat/core/error/exeptions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 abstract class ChatRemoteDataSource {
@@ -15,6 +16,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final WebSocketChannel _channel;
   final StreamController<dynamic> _socketController =
       StreamController<dynamic>.broadcast();
+  bool _isConnected = true;
 
   ChatRemoteDataSourceImpl._internal(String url)
       : _channel = WebSocketChannel.connect(Uri.parse(url)) {
@@ -26,11 +28,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   factory ChatRemoteDataSourceImpl(String url) {
-    if (_instance == null) {
-      _instance = ChatRemoteDataSourceImpl._internal(url);
-    } else {
-      log('Reusing existing ChatRemoteDataSourceImpl instance');
-    }
+    _instance ??= ChatRemoteDataSourceImpl._internal(url);
     return _instance!;
   }
 
@@ -39,17 +37,19 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     try {
       _socketController.add(jsonDecode(message));
     } catch (e) {
-      log('Error decoding message: $e');
+      _socketController.addError(const ChatException("Invalid message format"));
     }
   }
 
   void _handleError(dynamic error) {
     log('WebSocket error: $error');
-    _socketController.addError(error);
+    _isConnected = false;
+    _socketController.addError(const ChatException("Connection error"));
   }
 
   void _handleDone() {
     log('WebSocket closed');
+    _isConnected = false;
     _socketController.close();
   }
 
@@ -58,17 +58,19 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   void sendMessage(String message) {
+    if (!_isConnected) {
+      throw const ChatException("Failed to send message");
+    }
     try {
-      log('Sending message: $message');
       _channel.sink.add(jsonEncode({'message': message}));
     } catch (e) {
-      log('Failed to send message: $e');
+      throw const ChatException("Failed to send message");
     }
   }
 
   @override
   void dispose() {
-    log('Disposing WebSocket');
+    _isConnected = false;
     _socketController.close();
     _channel.sink.close();
     _instance = null;

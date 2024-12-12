@@ -25,8 +25,8 @@ class UserOffline extends ChatState {
   List<Object> get props => [];
 }
 
-class UserStatusError extends ChatState {
+class ChatError extends ChatState {
   final String message;
 
-  const UserStatusError(this.message);
+  const ChatError(this.message);
 }
